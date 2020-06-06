@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.03
+VER=2020.06.05
 
 # packages required
 #
@@ -18,7 +18,7 @@ AUTH='Robert'
 
 # github repository
 #
-REPO="https://github.com/blue-sky-r/mpv-wifi-rc"
+REPO="https://github.com/blue-sky-r/yrno-tools"
 
 # copyright
 #
@@ -58,6 +58,10 @@ FORCE=
 #
 TITLE=
 
+# css margin to position svg meteogram on html page
+#
+MARGIN="auto"
+
 # refresh cache (minimum 60 mins - please read and respect Data-access-and-terms-of-service)
 # https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service
 #
@@ -75,9 +79,9 @@ DBG=
 #
 LOG="yr.no"
 
-# user-agent
+# user-agent (also include repository)
 #
-UA='Mozilla/5.0 (Tablet; rv:26.0) Gecko/26.0 Firefox/26.0'
+UA='Mozilla/5.0 (Tablet; rv:26.0) Gecko/26.0 Firefox/26.0 * $REPO'
 
 # translate CC (empty for default EN lang)
 #
@@ -89,24 +93,25 @@ LANG_CC=
 usage="
 $COPY
 
-usage: $0 [-h][-d][-l tag][-t sec][-a agent][-c cache][-e exp][-cc CC][-i title][-u url][-o loc][-r res][-f force][-wxh WxH]
+usage: $0 [-h][-d][-l tag][-t sec][-a agent][-c cache][-e exp][-cc CC][-i title][-m margin][-u url][-o loc][-r res][-f force][-wxh WxH]
 
-h       ... this usage help
-d       ... verbose/debug output to stdout (overrides log setting)
-l tag   ... log output to logger with tag (default $LOG)
-t sec   ... http timeout in sec (default $TIMEOUT)
-a agent ... user-agent string for html page retrieval (default $UA)
-c cache ... cache file (default $CACHE)
-e exp   ... cache  expiry time (default $EXPIRY)
-cc CC   ... translate to language CC (default $LANG_CC), empty is EN
-i title ... html title (default $TITLE), result is html format if title is provided, svg format otherwise
-u url   ... url to get meteogram svg graphic (default $URL)
-o loc   ... location instead of full url in the format Country/Province/City (default $LOC)
-r res   ... result file (default $RESULT)
-f force ... force update action (default $FORCE)
-            wget - force cache refresh even within expiry period
-            svg  - force regeneration of meteogram
-wxh WxH ... scale graphics to width W and height H (default $WxH), empty for no scaling = original size
+h        ... this usage help
+d        ... verbose/debug output to stdout (overrides log setting)
+l tag    ... log output to logger with tag (default $LOG)
+t sec    ... http timeout in sec (default $TIMEOUT)
+a agent  ... user-agent string for html page retrieval (default $UA)
+c cache  ... cache file (default $CACHE)
+e exp    ... cache  expiry time (default $EXPIRY)
+cc CC    ... translate to language CC (default $LANG_CC), empty is EN
+i title  ... html title (default $TITLE), result is html format if title is provided, svg format otherwise
+m margin ... css margin to position svg meteogram on html page (default $MARGIN), used only for html output
+u url    ... url to get meteogram svg graphic (default $URL)
+o loc    ... location instead of full url in the format Country/Province/City (default $LOC)
+r res    ... result file (default $RESULT)
+f force  ... force update action (default $FORCE)
+             wget - force cache refresh even within expiry period
+             svg  - force regeneration of meteogram
+wxh WxH  ... scale graphics to width W and height H (default $WxH), empty for no scaling = original size
 
 Required pkgs: $REQUIRES
 "
@@ -181,6 +186,11 @@ do
         TITLE=$1
         ;;
 
+    -m|-margin)
+        shift
+        MARGIN=$1
+        ;;
+
     -f|-force)
         shift
         FORCE=$1
@@ -215,7 +225,7 @@ msg="true"
 
 # log
 #
-$msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH = html.title $TITLE = lang.cc $LANG_CC = force $FORCE ="
+$msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH = html.title $TITLE = css.margin: $MARGIN = lang.cc $LANG_CC = force $FORCE ="
 
 # retrieve forecast page if required ($cache doesn't exist or older then $expiry)
 #
@@ -253,7 +263,7 @@ then
     #
     [ -n "$TITLE" ] && echo -e "<html>\n<head>\n<title>$TITLE</title>\n</head>\n" \
                                 "<body style=\"background-color: black; cursor: none;\">\n" \
-                                "<div  style=\"display: table; margin: auto;\">\n" >> "$RESULT"
+                                "<div  style=\"display: table; margin: ${MARGIN};\">\n" >> "$RESULT"
 
     # filter svg parts (suppress warnings and errors - and yes, there are many)
     #
