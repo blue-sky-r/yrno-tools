@@ -225,7 +225,7 @@ msg="true"
 
 # log
 #
-$msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH = html.title $TITLE = css: $STYLE = lang.cc $LANG_CC = force $FORCE ="
+$msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH = html.title $TITLE = lang.cc $LANG_CC = force $FORCE ="
 
 # retrieve forecast page if required ($cache doesn't exist or older then $expiry)
 #
@@ -266,14 +266,15 @@ then
     #                            "<div  style=\"display: table; margin: ${MARGIN};\">\n" >> "$RESULT"
 
     [ -n "$TITLE" ] && echo -e "<html>\n <head>\n <title>$TITLE</title>\n" \
-                                "<style>\n ${STYLE} \n</style>\n </head>\n <body>\n <div>\n" >> "$RESULT"
+                                "<style>\n ${STYLE} \n</style>\n </head>\n <body>\n <div>\n" >> "$RESULT" \
+                    && $msg "html format using css $STYLE"
 
     # filter svg parts (suppress warnings and errors - and yes, there are many)
     #
     xmllint --html --nowarning --xpath '//body/svg' "$CACHE" >> "$RESULT" 2>/dev/null
 
     xmllint --html --nowarning --xpath '//div[@class="meteogramme-img"]/svg' "$CACHE" 2>/dev/null \
-        | grep -v '<image id="imgMeteogram" src="' >> "$RESULT" 2>/dev/null
+        | grep -v '<image id="imgMeteogram" src="' >> "$RESULT"
 
     # <meta property="og:description" content="05 June 2020 at 12:00-13:00: Rain, Temperature 15, 0.5 mm, Gentle breeze, 5 m/s from south" />
 
