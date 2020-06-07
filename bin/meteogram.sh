@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.07
+VER=2020.06.08
 
 # packages required
 #
@@ -30,7 +30,6 @@ COPY="= weather meteogram = extract svg graphic meteogram from yr.no = (c) $VER 
 # location
 #
 LOC="Canada/Ontario/Toronto"
-#LOC="Slovakia/Bansk%C3%A1_Bystrica/Bansk%C3%A1_Bystrica"
 # http yr.no
 HTTP="https://www.yr.no/place"
 # hour-by-hour page
@@ -50,7 +49,7 @@ RESULT="/tmp/meteogram.html"
 #
 CACHE="/tmp/cache-$PAGE"
 
-# force update (one of 'wget', 'wget svg','svg')
+# force update (one of 'wget', 'wget svg','svg', unknown tokens are ignored)
 #
 FORCE=
 
@@ -65,7 +64,7 @@ STYLE="body { background-color: black; cursor: none; } body div { display: table
 # refresh cache (minimum 60 mins - please read and respect Data-access-and-terms-of-service)
 # https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service
 #
-EXPIRY='1 hour'
+EXPIRY='1 hour + 15 mins'
 
 # scale to width x height (empty for no scaling)
 #
@@ -79,9 +78,9 @@ DBG=
 #
 LOG="yr.no"
 
-# user-agent (include repository)
+# user-agent (include repository and itself)
 #
-UA='Mozilla/5.0 (Tablet; rv:26.0) Gecko/26.0 Firefox/26.0 * $REPO'
+UA='Mozilla/5.0 Gecko/26.0 Firefox/26.0 * $REPO/meteogram.sh'
 
 # translate CC (empty for default EN lang)
 #
@@ -229,7 +228,7 @@ $msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH 
 
 # retrieve forecast page if required ($cache doesn't exist or older then $expiry)
 #
-if [[ $FORCE == *wget* || ! -s "$CACHE" || $(date -d "now - $EXPIRY" +%s) > $(date -r "$CACHE" +%s) ]]
+if [[ $FORCE == *wget* || ! -s "$CACHE" || $(date -d "now - ${EXPIRY//+/-}" +%s) > $(date -r "$CACHE" +%s) ]]
 then
 
     # log
@@ -262,6 +261,7 @@ then
     # optional html header and log CSS
     #
     [ -n "$TITLE" ] && echo -e "<html>\n <head>\n <title>$TITLE</title>\n" \
+                                "<meta charset=\"utf-8\">\n " \
                                 "<style>\n ${STYLE} \n</style>\n </head>\n <body>\n <div>\n" >> "$RESULT" \
                     && $msg "html format using css $STYLE"
 
