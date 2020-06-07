@@ -259,12 +259,8 @@ then
     #
     echo -n "" > "$RESULT"
 
-    # optional html header
+    # optional html header and log CSS
     #
-    #[ -n "$TITLE" ] && echo -e "<html>\n<head>\n<title>$TITLE</title>\n</head>\n" \
-    #                            "<body style=\"background-color: black; cursor: none;\">\n" \
-    #                            "<div  style=\"display: table; margin: ${MARGIN};\">\n" >> "$RESULT"
-
     [ -n "$TITLE" ] && echo -e "<html>\n <head>\n <title>$TITLE</title>\n" \
                                 "<style>\n ${STYLE} \n</style>\n </head>\n <body>\n <div>\n" >> "$RESULT" \
                     && $msg "html format using css $STYLE"
@@ -276,7 +272,9 @@ then
     xmllint --html --nowarning --xpath '//div[@class="meteogramme-img"]/svg' "$CACHE" 2>/dev/null \
         | grep -v '<image id="imgMeteogram" src="' >> "$RESULT"
 
+    # current weather condition - description
     # <meta property="og:description" content="05 June 2020 at 12:00-13:00: Rain, Temperature 15, 0.5 mm, Gentle breeze, 5 m/s from south" />
+    description=$( xmllint --html --nowarning --xpath 'string(//meta[@property="og:description"]/@content)' "$CACHE" 2>/dev/null )
 
     # optional html footer
     #
