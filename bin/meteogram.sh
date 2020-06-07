@@ -6,11 +6,11 @@
 
 # version
 #
-VER=2020.06.05
+VER=2020.06.07
 
 # packages required
 #
-REQUIRES="libxml2-utils"
+REQUIRES="pkg: libxml2-utils, script: [ meteogram-CC.sed for the translation to CC language ]"
 
 # author
 #
@@ -58,9 +58,9 @@ FORCE=
 #
 TITLE=
 
-# css margin to position svg meteogram on html page
+# css for html page
 #
-MARGIN="auto"
+STYLE="body { background-color: black; cursor: none; } body div { display: table, margin: auto; }"
 
 # refresh cache (minimum 60 mins - please read and respect Data-access-and-terms-of-service)
 # https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service
@@ -79,7 +79,7 @@ DBG=
 #
 LOG="yr.no"
 
-# user-agent (also include repository)
+# user-agent (include repository)
 #
 UA='Mozilla/5.0 (Tablet; rv:26.0) Gecko/26.0 Firefox/26.0 * $REPO'
 
@@ -93,7 +93,7 @@ LANG_CC=
 usage="
 $COPY
 
-usage: $0 [-h][-d][-l tag][-t sec][-a agent][-c cache][-e exp][-cc CC][-i title][-m margin][-u url][-o loc][-r res][-f force][-wxh WxH]
+usage: $0 [-h][-d][-l tag][-t sec][-a agent][-c cache][-e exp][-cc CC][-i title][-s css][-u url][-o loc][-r res][-f force][-wxh WxH]
 
 h        ... this usage help
 d        ... verbose/debug output to stdout (overrides log setting)
@@ -104,7 +104,7 @@ c cache  ... cache file (default $CACHE)
 e exp    ... cache  expiry time (default $EXPIRY)
 cc CC    ... translate to language CC (default $LANG_CC), empty is EN
 i title  ... html title (default $TITLE), result is html format if title is provided, svg format otherwise
-m margin ... css margin to position svg meteogram on html page (default $MARGIN), used only for html output
+s css    ... css style for html output (default $STYLE)
 u url    ... url to get meteogram svg graphic (default $URL)
 o loc    ... location instead of full url in the format Country/Province/City (default $LOC)
 r res    ... result file (default $RESULT)
@@ -186,9 +186,9 @@ do
         TITLE=$1
         ;;
 
-    -m|-margin)
+    -s|-css|-style)
         shift
-        MARGIN=$1
+        STYLE=$1
         ;;
 
     -f|-force)
@@ -221,11 +221,11 @@ msg="true"
 # logger
 [ -n "LOG" ] && msg="logger -t \"$LOG\""
 # stdout
-[ $DBG ] && msg="echo -e"
+[ $DBG ] && msg="echo -e $LOG:"
 
 # log
 #
-$msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH = html.title $TITLE = css.margin: $MARGIN = lang.cc $LANG_CC = force $FORCE ="
+$msg "= starting $0 = cache $CACHE = expiry $EXPIRY = result $RESULT = WxH $WxH = html.title $TITLE = css: $STYLE = lang.cc $LANG_CC = force $FORCE ="
 
 # retrieve forecast page if required ($cache doesn't exist or older then $expiry)
 #
@@ -261,21 +261,25 @@ then
 
     # optional html header
     #
-    [ -n "$TITLE" ] && echo -e "<html>\n<head>\n<title>$TITLE</title>\n</head>\n" \
-                                "<body style=\"background-color: black; cursor: none;\">\n" \
-                                "<div  style=\"display: table; margin: ${MARGIN};\">\n" >> "$RESULT"
+    #[ -n "$TITLE" ] && echo -e "<html>\n<head>\n<title>$TITLE</title>\n</head>\n" \
+    #                            "<body style=\"background-color: black; cursor: none;\">\n" \
+    #                            "<div  style=\"display: table; margin: ${MARGIN};\">\n" >> "$RESULT"
+
+    [ -n "$TITLE" ] && echo -e "<html>\n <head>\n <title>$TITLE</title>\n" \
+                                "<style>\n ${STYLE} \n</style>\n </head>\n <body>\n <div>\n" >> "$RESULT"
 
     # filter svg parts (suppress warnings and errors - and yes, there are many)
     #
     xmllint --html --nowarning --xpath '//body/svg' "$CACHE" >> "$RESULT" 2>/dev/null
 
-    xmllint --html --nowarning --xpath '//div[@class="meteogramme"]' "$CACHE" >> "$RESULT" 2>/dev/null
+    xmllint --html --nowarning --xpath '//div[@class="meteogramme-img"]/svg' "$CACHE" 2>/dev/null \
+        | grep -v '<image id="imgMeteogram" src="' >> "$RESULT" 2>/dev/null
 
     # <meta property="og:description" content="05 June 2020 at 12:00-13:00: Rain, Temperature 15, 0.5 mm, Gentle breeze, 5 m/s from south" />
 
     # optional html footer
     #
-    [ -n "$TITLE" ] && echo -e "\n</div>\n</body></html>\n" >> "$RESULT"
+    [ -n "$TITLE" ] && echo -e "\n </div>\n </body>\n </html>\n" >> "$RESULT"
 
     # optional scaling
     #
