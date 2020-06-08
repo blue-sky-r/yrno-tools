@@ -115,15 +115,6 @@ wxh WxH  ... scale graphics to width W and height H (default $WxH), empty for no
 Required pkgs: $REQUIRES
 "
 
-# debug or logger output
-#
-#function msg()
-#{
-#    [   $DBG ] && echo -e "$LOG $@"
-#    [ ! $DBG ] && [ -n "$LOG" ] && logger -t "$LOG" "$@"
-#    return
-#}
-
 # process cli parameters
 #
 while [ $# -gt 0 ]
@@ -214,7 +205,7 @@ do
     shift
 done
 
-# debug or logger output
+# msg - debug or logger output
 #
 msg="true"
 # logger
@@ -258,7 +249,7 @@ then
     #
     echo -n "" > "$RESULT"
 
-    # optional html header and log CSS
+    # optional html header (title, utf8, css) and log CSS
     #
     [ -n "$TITLE" ] && echo -e "<html>\n <head>\n <title>$TITLE</title>\n" \
                                 "<meta charset=\"utf-8\">\n " \
