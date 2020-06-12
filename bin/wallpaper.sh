@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.09
+VER=2020.06.10
 
 # packages / scripts required
 #
@@ -65,7 +65,7 @@ CSS_BG="background-color: black"
 # unscaled svg dim: 828 x 272
 # cass margin: top right bottom left
 #CSS_MARGIN="0 0 675 440"    # scaling: 1.000, 1.250 for 1280x1024
-CSS_MARGIN="0 0 743 440"    # scaling: 1.000, 1.000 for 1280x1024
+CSS_MARGIN="0 0 743 440"     # scaling: 1.000, 1.000 for 1280x1024
 
 # optional border around meteogram for visual enhancement
 #
@@ -82,12 +82,12 @@ usage: $0 [-h][-d][-l tag][-cc CC][-bg image][-m margin][-b border] -x width -y 
 h        ... this usage help
 d        ... verbose/debug output to stdout (overrides log setting)
 l tag    ... log output to logger with tag (default $LOG)
-cc CC    ... translate to language CC (default is EN)
+cc CC    ... translate to language CC (default is ${LANG_CC:-EN})
 bg image ... optional background image (default $CSS_BG)
 m margin ... css margin to position svg meteogram on html page (default $CSS_MARGIN)
 b border ... optional border around meteogram (default $CSS_BORDER)
-x width  ... x-size (width  in pixels)
-y height ... y-size (height in pixels)
+x width  ... x-size (width  in pixels, default $X)
+y height ... y-size (height in pixels, default $Y)
 o loc    ... location in the format Country/Province/City (default $LOC)
 r res    ... result desktop wallpaper (png) file
 
@@ -257,9 +257,10 @@ css=$( style $X $Y "$CSS_BG" "$CSS_BORDER" "$CSS_MARGIN" )
 # log
 $msg "using html.css: $css"
 
-# get meteogram
+# get meteogram, just try to copy bg in case of any error (exitcode has to be 0 otherwise result is discarded)
 #
-$(dirname "$0")/meteogram.sh -wxh $wxh $cc -i "$TITLE" -css "$css" -loc "$LOC" -r "$HTML"
+$(dirname "$0")/meteogram.sh -wxh $wxh $cc -i "$TITLE" -css "$css" -loc "$LOC" -r "$HTML" \
+|| { $msg "error getting meteogram, try to use background $CSS_BG"; [ -s "$CSS_BG" ] && cp "$CSS_BG" "$RESULT"; exit 0; }
 
 # log
 #
