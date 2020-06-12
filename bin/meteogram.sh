@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.08
+VER=2020.06.11
 
 # packages required
 #
@@ -80,7 +80,7 @@ LOG="yr.no"
 
 # user-agent (include repository and itself)
 #
-UA='Mozilla/5.0 Gecko/26.0 Firefox/26.0 * $REPO/meteogram.sh'
+UA="Mozilla/5.0 Gecko/26.0 Firefox/26.0 * $REPO/meteogram.sh"
 
 # translate CC (empty for default EN lang)
 #
@@ -101,18 +101,18 @@ t sec    ... http timeout in sec (default $TIMEOUT)
 a agent  ... user-agent string for html page retrieval (default $UA)
 c cache  ... cache file (default $CACHE)
 e exp    ... cache  expiry time (default $EXPIRY)
-cc CC    ... translate to language CC (default $LANG_CC), empty is EN
-i title  ... html title (default $TITLE), result is html format if title is provided, svg format otherwise
+cc CC    ... translate to language CC (default ${LANG_CC:-EN}), empty is EN
+i title  ... html title (default ${TITLE:-empty}), result is html format if title is provided, svg format otherwise
 s css    ... css style for html output (default $STYLE)
 u url    ... url to get meteogram svg graphic (default $URL)
 o loc    ... location instead of full url in the format Country/Province/City (default $LOC)
 r res    ... result file (default $RESULT)
-f force  ... force update action (default $FORCE)
+f force  ... force update action (default ${FORCE:-empty})
              wget - force cache refresh even within expiry period
              svg  - force regeneration of meteogram
-wxh WxH  ... scale graphics to width W and height H (default $WxH), empty for no scaling = original size
+wxh WxH  ... scale graphics to width W and height H (default ${WxH:-empty}), empty for no scaling = original size
 
-Required pkgs: $REQUIRES
+Required: $REQUIRES
 "
 
 # process cli parameters
@@ -226,9 +226,10 @@ then
     #
     $msg "refresh cache: $( ls -l $CACHE ) = url: $URL = timeout $TIMEOUT"
 
-    # get
+    # get or exit with wget exitcode
     #
-    wget -q -U "$UA" --timeout=$TIMEOUT -O "$CACHE" "$URL" && cache_updated=1
+    wget -q -U "$UA" --timeout=$TIMEOUT -O "$CACHE" "$URL" && cache_updated=1 \
+    || { exitcode=$?; $msg "wget error code: $exitcode"; exit $exitcode; }
 
     # log
     #
@@ -240,9 +241,9 @@ else
 fi
 
 
-# regenerate result only if we got updated $cache file
+# regenerate result only if $force update requested or got updated $cache file or have $cache file but not $result
 #
-if [[ $FORCE == *svg* || -s "$CACHE" && $cache_updated ]]
+if [[ $FORCE == *svg* || -s "$CACHE" && $cache_updated || -s "$CACHE" && ! -s "$RESULT"  ]]
 then
 
     # start with empty result
@@ -258,7 +259,8 @@ then
 
     # filter svg parts (suppress warnings and errors - and yes, there are many)
     #
-    xmllint --html --nowarning --xpath '//body/svg' "$CACHE" >> "$RESULT" 2>/dev/null
+    xmllint --html --nowarning --xpath '//body/svg' "$CACHE" >> "$RESULT" 2>/dev/null \
+    || { exitcode=$?; $msg "xmllint error code: $exitcode"; exit $exitcode; }
 
     xmllint --html --nowarning --xpath '//div[@class="meteogramme-img"]/svg' "$CACHE" 2>/dev/null \
         | grep -v '<image id="imgMeteogram" src="' >> "$RESULT"
