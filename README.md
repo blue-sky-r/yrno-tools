@@ -46,10 +46,41 @@ available (sed script). The result is either svg or html format.
 
 ### dispaly-meteohram.sh
 
-BASH script to retrieve (calling meteogram.sh) and display full-screen meteogram for configurable time.
+BASH script to retrieve (by calling meteogram.sh) and display full-screen meteogram for configurable time.
 Firefox browser in kiosk-mode is used as svg+html full-screen viewer. To display the meteogram the firefox
-is bring to the front while IPTV mpv player in full-screen mode is sent to back. The browser is forced to refresh
-the page to always display the updated meteogram, After configurable time the IPTV player is brought again to front.
+is bring up to the front while IPTV mpv player in full-screen mode is sent to back. The browser is forced to refresh
+the page to always display the updated meteogram. After configurable time the IPTV player is brought again to the front.
+
+    $ ./display-meteogram.sh -h
+
+    = display meteogram = retrieve and display meteogram in viewer for defined time = (c) 2020.06.03 by Robert = https://github.com/blue-sky-r/mpv-wifi-rc =
+
+    usage: ./display-meteogram.sh [-h][-d][-l tag][-s sec][-cc CC][-i title][-v title][-o loc][-r res][-a action][-b border][-wxh WxH]
+
+    h        ... this usage help
+    d        ... verbose/debug output to stdout (overrides log setting)
+    l tag    ... log output to logger with tag (default yr.disp)
+    s sec    ... show meteogram for time sec (default 30)
+    cc CC    ... translate to language CC (default SK), empty is EN (no translation)
+    i title  ... html title (default meteogram), result is in html format if title is provided, otherwise in svg format
+    v title  ... iptv player title (default mpv)
+    o loc    ... location in the format Country/Province/City (default Slovakia/Bansk%C3%A1_Bystrica/Bansk%C3%A1_Bystrica)
+    r res    ... result file (default /tmp/meteogram.html)
+    a action ... execute actions (default meteogram viewer refresh sleep iptv)
+                 meteogram - call script meteogram.sh to retrieve svg/html
+                 wget - force cache refresh even within expiry period
+                 svg  - force regeneration of meteogram
+                 viewer - execute viewer if not running and bring it to front
+                 refresh - force viewer refresh
+                 sleep - sleep (display meteogram)
+                 iptv - bring iptv player to front
+                 refresh - force refresh browser window
+    b border ... border size (graphics will be smaller by border)
+    wxh WxH  ... browser/viewer width W x height H (default 1920x1080)
+
+    Required: pkg: wmctrl xautomation; script: meteogram.sh
+
+This functionality is used as a part of mpv-wifi-rc (mpv wifi remote control).
 
 ### wallpaper.sh
 
@@ -57,6 +88,43 @@ TDE (KDE 3) Desktop Wallpaper config supportd user program to draw wallpaper. Th
 to dynamically render meteogram on the Desktop Wallpaper. This offers the user quick access to detailed weather forecast
 for the next 48 hours. Position and size of the meteogram are configurable.
 
+    $ ./wallpaper.sh -h
+
+    = generate desktop wallpaper png image with actual weather meteogram from yr.no = (c) 2020.06.10 by Robert = https://github.com/blue-sky-r/yrno-tools =
+
+    usage: ./wallpaper.sh [-h][-d][-l tag][-cc CC][-bg image][-m margin][-b border] -x width -y height -o loc -r res
+
+    h        ... this usage help
+    d        ... verbose/debug output to stdout (overrides log setting)
+    l tag    ... log output to logger with tag (default meteo-wallpaper)
+    cc CC    ... translate to language CC (default is SK)
+    bg image ... optional background image (default background-color: black)
+    m margin ... css margin to position svg meteogram on html page (default 0 0 743 440)
+    b border ... optional border around meteogram (default 3px solid cyan)
+    x width  ... x-size (width  in pixels, default 1280)
+    y height ... y-size (height in pixels, default 1024)
+    o loc    ... location in the format Country/Province/City (default Slovakia/Banská_Bystrica/Banská_Bystrica)
+    r res    ... result desktop wallpaper (png) file
+
+    Required: pkg: cutycapt; script: meteogram.sh [meteogram-CC.sed]
+
+    Examples
+
+    Default position of meteogram in the right-top corner on Trinity crystal_fire wallpaper:
+
+     > ./wallpaper.sh -x 1280 -y 1024 -bg /opt/trinity/share/wallpapers/crystal_fire.png -r /tmp/test.png
+
+    Position of meteogram in the right-bottom corner on Trinity crystal_fire wallpaper:
+
+     > ./wallpaper.sh -x 1280 -y 1024 -bg /opt/trinity/share/wallpapers/crystal_fire.png -m '600 0 0 200' -r /tmp/test.png
+
+    Default position of meteogram on black background for for Toronto, CA
+
+     > ./wallpaper.sh -x 1280 -y 1024 -bg black -loc 'Canada/Ontario/Toronto' -r /tmp/test.png
+
+    Command for Trinity / Desktop / Advanced settings:
+
+     > ./wallpaper.sh -x %x -y %y -loc 'Canada/Ontario/Toronto' -bg /opt/trinity/share/wallpapers/crystal_fire.png -r %f
 
 ### keywords
 
