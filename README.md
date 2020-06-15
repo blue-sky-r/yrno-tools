@@ -4,7 +4,7 @@ The Norway Weather forecast website [https://www.yr.no](https://www.yr.no) provi
 representation of hour-by-hour weather conditions called meteogram. It combines temperature plot, sky conditions,
 amount of rain and wind strength and direction in one picture:
 
-![www.yr.no hour-by-hour meteogram for Toronto ON CA](screenshot/yr,no-hour-by-hour.png)
+![www.yr.no hour-by-hour meteogram for Toronto ON CA](screenshot/yr.no-hour-by-hour.png)
 
 Here are some linux tools to work with meteograms:
 
