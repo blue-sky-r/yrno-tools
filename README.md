@@ -1,24 +1,37 @@
 ## yr.no hour-by-hour meteogram tools
 
 The Norway Weather forecast website [https://www.yr.no](https://www.yr.no) provides user friendly graphical
-representation of hour-by-hour weather conditions called meteogram.
+representation of hour-by-hour weather conditions called meteogram. It combines temperature plot, sky conditions,
+amount of rain and wind strength and direction in one picture:
+
+![www.yr.no hour-by-hour meteogram for Toronto ON CA](screenshot/yr,no-hour-by-hour.png)
 
 Here are some linux tools to work with meteograms:
 
-* meteogram.sh ... script to retrieve, cache, extract, scale and translate meteogram
-* display-meteogram.sh ... meteogram utility for mpv (IPTV) player
-* wallpaper.sh ... Trinity Desktop Environment (TDE) tools for inserting live meteogram into desktop wallpaper
+* meteogram.sh ... base level script to retrieve, cache, extract, scale and translate meteogram
+* display-meteogram.sh ... meteogram utility for mpv (IPTV) player (full-screen timed display and refresh of meteogram)
+* wallpaper.sh ... Trinity Desktop Environment (TDE) tool for inserting live meteogram into desktop wallpaper
 
 Each script can be called by -h (-help) parameter to show usage help.
+
+By calling script without any parameters the default values are used.
+To modify defaults just edit section denoted:
+
+    # DEFAULTS #
+    #-----------
+    ...
+    ...
+    # /DEFAULTS #
+    #------------
 
 ### meteogram.sh
 
 BASH script to retrieve hour-by-hour web page from [https://www.yr.no](https://www.yr.no) for specific location (wget).
 The retrieved html page is cached locally for configurable time. The meteogram svg graphic is extracted and optionally
-scalled to required dimensions (xmllint). Optional simplistic text translation based on string find and replace is also
-available (sed script). The result is either svg or html format.
+scalled to required dimensions (xmllint, sed). Optional simplistic text translation based on string find and replace
+is also available (sed script). The result is either svg or html format.
 
-    $ ./meteogram.sh -h
+    $ bin/meteogram.sh -h
 
     = weather meteogram = extract svg graphic meteogram from yr.no = (c) 2020.06.11 by Robert = https://github.com/blue-sky-r/yrno-tools =
 
@@ -44,14 +57,14 @@ available (sed script). The result is either svg or html format.
 
     Required: pkg: libxml2-utils, script: [ meteogram-CC.sed for the translation to CC language ]
 
-### dispaly-meteohram.sh
+### dispaly-meteogram.sh
 
 BASH script to retrieve (by calling meteogram.sh) and display full-screen meteogram for configurable time.
 Firefox browser in kiosk-mode is used as svg+html full-screen viewer. To display the meteogram the firefox
 is bring up to the front while IPTV mpv player in full-screen mode is sent to back. The browser is forced to refresh
 the page to always display the updated meteogram. After configurable time the IPTV player is brought again to the front.
 
-    $ ./display-meteogram.sh -h
+    $ bin/display-meteogram.sh -h
 
     = display meteogram = retrieve and display meteogram in viewer for defined time = (c) 2020.06.03 by Robert = https://github.com/blue-sky-r/mpv-wifi-rc =
 
@@ -80,7 +93,7 @@ the page to always display the updated meteogram. After configurable time the IP
 
     Required: pkg: wmctrl xautomation; script: meteogram.sh
 
-This functionality is used as a part of mpv-wifi-rc (mpv wifi remote control).
+This functionality is used for IPTV [mpv-wifi-rc](https://github.com/blue-sky-r/mpv-wifi-rc) (mpv wifi remote control).
 
 ### wallpaper.sh
 
@@ -88,7 +101,7 @@ TDE (KDE 3) Desktop Wallpaper config supportd user program to draw wallpaper. Th
 to dynamically render meteogram on the Desktop Wallpaper. This offers the user quick access to detailed weather forecast
 for the next 48 hours. Position and size of the meteogram are configurable.
 
-    $ ./wallpaper.sh -h
+    $ bin/wallpaper.sh -h
 
     = generate desktop wallpaper png image with actual weather meteogram from yr.no = (c) 2020.06.10 by Robert = https://github.com/blue-sky-r/yrno-tools =
 
@@ -125,6 +138,31 @@ for the next 48 hours. Position and size of the meteogram are configurable.
     Command for Trinity / Desktop / Advanced settings:
 
      > ./wallpaper.sh -x %x -y %y -loc 'Canada/Ontario/Toronto' -bg /opt/trinity/share/wallpapers/crystal_fire.png -r %f
+
+### TDE custom wallpaper setup
+
+To configire live meteogram for Trinity TDE wallpaper go to Trinity-Control-Center and select No-picture for Background:
+
+![TDE Control Center](screenshot/tde-apperance-background.png)
+
+Proceed to Advanced-Options and click Add:
+
+![TDE Configure Background Program](screenshot/tde-add-bg-program.png)
+
+Name and Comment have just informational value. Enter everything into Command field. Shell expansion works here,
+so for example home dir ~ get expanded correctly. TDE provides parameters %x (width), %y (height)
+and %f (result = generated wallpaper in png format). Leave Preview empty and enter anything into Executable field.
+This is some TDE quicks as this field is copletely ignored but must not be left empty. Keep refresh time 60 min
+to not abuse [yr.no Data-access-and-terms-of-service](https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service).
+
+After clicking OK you should get something like this
+
+![TDE Advanced Background Settings](screenshot/tde-add-bg-advanced.png)
+
+Click OK and then Apply in Trinity Control Center - Backgound. The just configured program will be immediately executed
+and result displayed as wallpaper on the desktop. The wallpaper will be updated periodically as configured. If wallpaper
+is not updated check syslog (default output goes to syslog) or execute script from command line and add -v (verbose)
+output to stdout.
 
 ### keywords
 
