@@ -8,9 +8,9 @@ amount of rain and wind strength and direction in one picture:
 
 Here are some linux tools to work with meteograms:
 
-* meteogram.sh ... base level script to retrieve, cache, extract, scale and translate meteogram
-* display-meteogram.sh ... meteogram utility for mpv (IPTV) player (full-screen timed display and refresh of meteogram)
-* wallpaper.sh ... Trinity Desktop Environment (TDE) tool for inserting live meteogram into desktop wallpaper
+* [meteogram.sh](#meteogramsh) - base level script to retrieve, cache, extract, scale and translate meteogram
+* [display-meteogram.sh](display-meteogramsh) - meteogram utility for mpv (IPTV) player (full-screen timed display and refresh of meteogram)
+* [wallpaper.sh](wallpapersh) - Trinity Desktop Environment (TDE) tool for inserting live meteogram into desktop wallpaper
 
 Each script can be called by -h (-help) parameter to show usage help.
 
@@ -57,7 +57,7 @@ is also available (sed script). The result is either svg or html format.
 
     Required: pkg: libxml2-utils, script: [ meteogram-CC.sed for the translation to CC language ]
 
-### dispaly-meteogram.sh
+### display-meteogram.sh
 
 BASH script to retrieve (by calling meteogram.sh) and display full-screen meteogram for configurable time.
 Firefox browser in kiosk-mode is used as svg+html full-screen viewer. To display the meteogram the firefox
@@ -93,7 +93,7 @@ the page to always display the updated meteogram. After configurable time the IP
 
     Required: pkg: wmctrl xautomation; script: meteogram.sh
 
-This functionality is used for IPTV [mpv-wifi-rc](https://github.com/blue-sky-r/mpv-wifi-rc) (mpv wifi remote control).
+This functionality is used in IPTV [mpv-wifi-rc](https://github.com/blue-sky-r/mpv-wifi-rc) (mpv wifi remote control).
 
 ### wallpaper.sh
 
