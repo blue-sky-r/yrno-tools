@@ -9,8 +9,8 @@ amount of rain and wind strength and direction in one picture:
 Here are some linux tools to work with meteograms:
 
 * [meteogram.sh](#meteogramsh) - base level script to retrieve, cache, extract, scale and translate meteogram
-* [display-meteogram.sh](display-meteogramsh) - meteogram utility for mpv (IPTV) player (full-screen timed display and refresh of meteogram)
-* [wallpaper.sh](wallpapersh) - Trinity Desktop Environment (TDE) tool for inserting live meteogram into desktop wallpaper
+* [display-meteogram.sh](#display-meteogramsh) - meteogram utility for mpv (IPTV) player (full-screen timed display and refresh of meteogram)
+* [wallpaper.sh](#wallpapersh) - Trinity Desktop Environment (TDE) tool for inserting live meteogram into desktop wallpaper
 
 Each script can be called by -h (-help) parameter to show usage help.
 
@@ -61,8 +61,9 @@ is also available (sed script). The result is either svg or html format.
 
 BASH script to retrieve (by calling meteogram.sh) and display full-screen meteogram for configurable time.
 Firefox browser in kiosk-mode is used as svg+html full-screen viewer. To display the meteogram the firefox
-is bring up to the front while IPTV mpv player in full-screen mode is sent to back. The browser is forced to refresh
+is brought up to the front while IPTV mpv player in full-screen mode is sent to back. The browser is forced to refresh
 the page to always display the updated meteogram. After configurable time the IPTV player is brought again to the front.
+Tje IPTV player in the background is not paused so audio is still available while meteogram is displayed.
 
     $ bin/display-meteogram.sh -h
 
@@ -93,11 +94,11 @@ the page to always display the updated meteogram. After configurable time the IP
 
     Required: pkg: wmctrl xautomation; script: meteogram.sh
 
-This functionality is used in IPTV [mpv-wifi-rc](https://github.com/blue-sky-r/mpv-wifi-rc) (mpv wifi remote control).
+This functionality is used in IPTV project [mpv-wifi-rc](https://github.com/blue-sky-r/mpv-wifi-rc) (mpv wifi remote control).
 
 ### wallpaper.sh
 
-TDE (KDE 3) Desktop Wallpaper config supportd user program to draw wallpaper. This feature is utilised by this BASH script
+TDE (KDE 3 based) Desktop Wallpaper config supports user program to render wallpaper. This feature is utilised by this BASH script
 to dynamically render meteogram on the Desktop Wallpaper. This offers the user quick access to detailed weather forecast
 for the next 48 hours. Position and size of the meteogram are configurable.
 
@@ -141,27 +142,27 @@ for the next 48 hours. Position and size of the meteogram are configurable.
 
 ### TDE custom wallpaper setup
 
-To configire live meteogram for Trinity TDE wallpaper go to Trinity-Control-Center and select No-picture for Background:
+To configure live meteogram for Trinity TDE wallpaper go to Trinity-Control-Center and select No-picture for Background:
 
 ![TDE Control Center](screenshot/tde-apperance-background.png)
 
-Proceed to Advanced-Options and click Add:
+Proceed to Advanced-Options and click Add Background Program:
 
 ![TDE Configure Background Program](screenshot/tde-add-bg-program.png)
 
-Name and Comment have just informational value. Enter everything into Command field. Shell expansion works here,
+Name and Comment have just informational value. Enter everything into the Command field. Shell expansions work here,
 so for example home dir ~ get expanded correctly. TDE provides parameters %x (width), %y (height)
-and %f (result = generated wallpaper in png format). Leave Preview empty and enter anything into Executable field.
-This is some TDE quicks as this field is copletely ignored but must not be left empty. Keep refresh time 60 min
+and %f (result = generated wallpaper in png format). Leave Preview empty and enter anything into the Executable field.
+This is some TDE quirk as this field is completely ignored but must not be left empty, so enter anything. Keep refresh time 60 min
 to not abuse [yr.no Data-access-and-terms-of-service](https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service).
 
-After clicking OK you should get something like this
+After clicking OK you should get something like this:
 
 ![TDE Advanced Background Settings](screenshot/tde-add-bg-advanced.png)
 
-Click OK and then Apply in Trinity Control Center - Backgound. The just configured program will be immediately executed
+Click OK and then Apply in Trinity Control Center - Background. The just configured background program will be immediately executed
 and result displayed as wallpaper on the desktop. The wallpaper will be updated periodically as configured. If wallpaper
-is not updated check syslog (default output goes to syslog) or execute script from command line and add -v (verbose)
+is not updated check syslog (default output goes to syslog) or execute script with the pparameters from the command line and add -v (verbose)
 output to stdout.
 
 ### keywords
