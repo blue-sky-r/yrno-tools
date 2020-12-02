@@ -31,7 +31,7 @@ COPY="= weather meteogram = extract svg graphic meteogram from yr.no = (c) $VER 
 #
 LOC="Canada/Ontario/Toronto"
 # http yr.no
-HTTP="https://www.yr.no/place"
+HTTP="https://retro.yr.no/place"
 # hour-by-hour page
 PAGE="hour_by_hour.html"
 # construct url
