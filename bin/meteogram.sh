@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.11
+VER=2021.10.31
 
 # packages required
 #
@@ -29,13 +29,21 @@ COPY="= weather meteogram = extract svg graphic meteogram from yr.no = (c) $VER 
 
 # location
 #
-LOC="Canada/Ontario/Toronto"
+# How to find a location id:
+# - https://www.yr.no - search [right top] - type Your location - select from suggestion - copy location id from URL in format 2-123456
+#
+LOC="2-6167865"     # https://www.yr.no/en/forecast/graph/2-6167865/Canada/Ontario/Toronto
+LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-3061186/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Bansk%C3%A1%20Bystrica
+LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-12057205/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Bansk%C3%A1%20Bystrica
+LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-9891042/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Lux%20(Banska%20Bystrica)
 # http yr.no
-HTTP="https://retro.yr.no/place"
-# hour-by-hour page
-PAGE="hour_by_hour.html"
+HTTP="https://www.yr.no"
+# EN lang
+PATH="en/content"
+# hour-by-hour graph
+SVG="meteogram.svg"
 # construct url
-URL="$HTTP/$LOC/$PAGE"
+URL="$HTTP/$PATH/$LOC/$SVG"
 
 # http timeout in seconds
 #
@@ -47,7 +55,7 @@ RESULT="/tmp/meteogram.html"
 
 # cache file
 #
-CACHE="/tmp/cache-$PAGE"
+CACHE="/tmp/cache-$SVG"
 
 # force update (one of 'wget', 'wget svg','svg', unknown tokens are ignored)
 #
@@ -60,11 +68,12 @@ TITLE=
 # css for html page
 #
 STYLE="body { background-color: black; cursor: none; } body div { display: table, margin: auto; }"
+STYLE="body { background-color: white; cursor: none; }"
 
 # refresh cache (minimum 60 mins - please read and respect Data-access-and-terms-of-service)
 # https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service
 #
-EXPIRY='1 hour + 15 mins'
+EXPIRY='6 hour + 15 mins'
 
 # scale to width x height (empty for no scaling)
 #
@@ -78,9 +87,9 @@ DBG=
 #
 LOG="yr.no"
 
-# user-agent (include repository and itself)
+# user-agent (include reference to the repository and itself)
 #
-UA="Mozilla/5.0 Gecko/26.0 Firefox/26.0 * $REPO/meteogram.sh"
+UA="Mozilla/5.0 Gecko/20100101 Firefox/93.0 * $REPO/meteogram.sh"
 
 # translate CC (empty for default EN lang)
 #
@@ -252,22 +261,16 @@ then
 
     # optional html header (title, utf8, css) and log CSS
     #
+
     [ -n "$TITLE" ] && echo -e "<html>\n <head>\n <title>$TITLE</title>\n" \
                                 "<meta charset=\"utf-8\">\n " \
-                                "<style>\n ${STYLE} \n</style>\n </head>\n <body>\n <div>\n" >> "$RESULT" \
+                                "<style>\n ${STYLE} \n</style>\n " \
+                                "</head>\n <body>\n <div>\n" >> "$RESULT" \
                     && $msg "html format using css $STYLE"
 
-    # filter svg parts (suppress warnings and errors - and yes, there are many)
+    # insert svg graphic
     #
-    xmllint --html --nowarning --xpath '//body/svg' "$CACHE" >> "$RESULT" 2>/dev/null \
-    || { exitcode=$?; $msg "xmllint error code: $exitcode"; exit $exitcode; }
-
-    xmllint --html --nowarning --xpath '//div[@class="meteogramme-img"]/svg' "$CACHE" 2>/dev/null \
-        | grep -v '<image id="imgMeteogram" src="' >> "$RESULT"
-
-    # current weather condition - description
-    # <meta property="og:description" content="05 June 2020 at 12:00-13:00: Rain, Temperature 15, 0.5 mm, Gentle breeze, 5 m/s from south" />
-    description=$( xmllint --html --nowarning --xpath 'string(//meta[@property="og:description"]/@content)' "$CACHE" 2>/dev/null )
+    cat "$CACHE" >> $RESULT
 
     # optional html footer
     #
@@ -278,7 +281,7 @@ then
     if [ -n "$WxH" ]
     then
         # source dimensions
-        w=828; h=272
+        w=782; h=391
 
         # target dimensions
         width=${WxH%x*}
@@ -292,13 +295,11 @@ then
         $msg "optional scaling factor ($wscale, $hscale) source dim: $w x $h -> $width x $height"
 
         # scale svg and yr logo
-        sed -i -e '
-            # svg
-            s/g transform="translate(0.5,0.5)"/g transform="scale('$wscale','$hscale')"/
-            s/ width="'$w'" height="'$h'"/ width="'$width'" height="'$height'"/
-            # yr logo
-            s/g transform="translate(655,4) scale(0.5)"/g transform="translate(655,4) scale(0.2,0.2)"/
-            ' -i "$RESULT"
+        sed -i -z -e '
+            # svg scaling
+            s/width="'$w'"\n\s\+height="'$h'"/viewBox="0 0 '$width' '$height'" preserveAspectRatio="none"/1
+            ' "$RESULT"
+
     fi
 
     # optional language translation (weekdays, month names, legend)
