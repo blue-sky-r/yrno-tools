@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2021.10.31
+VER=2021.11.01
 
 # packages required
 #
@@ -39,11 +39,11 @@ LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-9891042/Slovak
 # http yr.no
 HTTP="https://www.yr.no"
 # EN lang
-PATH="en/content"
+EN_CONT="en/content"
 # hour-by-hour graph
 SVG="meteogram.svg"
 # construct url
-URL="$HTTP/$PATH/$LOC/$SVG"
+URL="$HTTP/$EN_CONT/$LOC/$SVG"
 
 # http timeout in seconds
 #
