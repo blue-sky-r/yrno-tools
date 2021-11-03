@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2021.11.01
+VER=2021.11.02
 
 # packages required
 #
@@ -29,21 +29,16 @@ COPY="= weather meteogram = extract svg graphic meteogram from yr.no = (c) $VER 
 
 # location
 #
-# How to find a location id:
-# - https://www.yr.no - search [right top] - type Your location - select from suggestion - copy location id from URL in format 2-123456
+# How to find your location id:
+# https://www.yr.no - search [right top] - type Your location - select from suggestion - copy location id from URL in format 2-123456
 #
 LOC="2-6167865"     # https://www.yr.no/en/forecast/graph/2-6167865/Canada/Ontario/Toronto
-LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-3061186/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Bansk%C3%A1%20Bystrica
-LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-12057205/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Bansk%C3%A1%20Bystrica
-LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-9891042/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Lux%20(Banska%20Bystrica)
 # http yr.no
 HTTP="https://www.yr.no"
 # EN lang
 EN_CONT="en/content"
 # hour-by-hour graph
 SVG="meteogram.svg"
-# construct url
-URL="$HTTP/$EN_CONT/$LOC/$SVG"
 
 # http timeout in seconds
 #
@@ -67,13 +62,13 @@ TITLE=
 
 # css for html page
 #
-STYLE="body { background-color: black; cursor: none; } body div { display: table, margin: auto; }"
+#STYLE="body { background-color: black; cursor: none; } body div { display: table, margin: auto; }"
 STYLE="body { background-color: white; cursor: none; }"
 
 # refresh cache (minimum 60 mins - please read and respect Data-access-and-terms-of-service)
 # https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service
 #
-EXPIRY='6 hour + 15 mins'
+EXPIRY='4 hour + 15 mins'
 
 # scale to width x height (empty for no scaling)
 #
@@ -114,7 +109,7 @@ cc CC    ... translate to language CC (default ${LANG_CC:-EN}), empty is EN
 i title  ... html title (default ${TITLE:-empty}), result is html format if title is provided, svg format otherwise
 s css    ... css style for html output (default $STYLE)
 u url    ... url to get meteogram svg graphic (default $URL)
-o loc    ... location instead of full url in the format Country/Province/City (default $LOC)
+o loc    ... location id instead of full url in the format 2-12345 (default $LOC)
 r res    ... result file (default $RESULT)
 f force  ... force update action (default ${FORCE:-empty})
              wget - force cache refresh even within expiry period
@@ -152,7 +147,6 @@ do
     -o|-loc|-location)
         shift
         LOC=$1
-        URL="$HTTP/$LOC/$PAGE"
         ;;
 
     -t|-timeout)
@@ -213,6 +207,10 @@ do
 
     shift
 done
+
+# construct url
+#
+URL="$HTTP/$EN_CONT/$LOC/$SVG"
 
 # msg - debug or logger output
 #
@@ -281,6 +279,8 @@ then
     if [ -n "$WxH" ]
     then
         # source dimensions
+        # w=$( awk '/width=/  {gsub(/[^0-9]/,"",$0); print $0; exit}' "$CACHE" )
+        # h=$( awk '/height=/ {gsub(/[^0-9]/,"",$0); print $0; exit}' "$CACHE" )
         w=782; h=391
 
         # target dimensions
@@ -294,10 +294,16 @@ then
         # log
         $msg "optional scaling factor ($wscale, $hscale) source dim: $w x $h -> $width x $height"
 
-        # scale svg and yr logo
+        # scale svg by transform
+        #sed -i -z -e '
+        #    # svg scaling
+        #    s/width="'$w'"\n\s\+height="'$h'"/width="'$width'" height="'$height'" transform="scale('$wscale','$hscale')"/1
+        #    ' "$RESULT"
+
+        # scale svg by viewBox
         sed -i -z -e '
             # svg scaling
-            s/width="'$w'"\n\s\+height="'$h'"/viewBox="0 0 '$width' '$height'" preserveAspectRatio="none"/1
+            s/width="'$w'"\n\s\+height="'$h'"/width="'$width'" height="'$height'" viewBox="0 0 '$w' '$h'" preserveAspectRatio="none"/1
             ' "$RESULT"
 
     fi
