@@ -6,7 +6,7 @@
 s/Mon\./Pondelok/g
 s/Tue\./Utorok/g
 s/Wed\./Streda/g
-s/Thu\./Štvrtok/g
+s/Thur\./Štvrtok/g
 s/Fri\./Piatok/g
 s/Sat\./Sobota/g
 s/Sun\./Nedeľa/g
@@ -28,7 +28,7 @@ s/Dec\./December/g
 
 # Legend
 #
-s/Weather forecast for/Meteogram pre/
+s/Weather forecast for/Meteogram/
 s/Temperature/Teplota/
 s/Precipitation/Zrážky/
 s/Wind/Vietor/
