@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.03
+VER=2021.11.03
 
 # packages required
 #
@@ -56,8 +56,8 @@ MODE='kiosk'
 
 # geo location
 #
-LOC="Canada/Ontario/Toronto"
-LOC="Slovakia/Bansk%C3%A1_Bystrica/Bansk%C3%A1_Bystrica"
+LOC="2-6167865"     # https://www.yr.no/en/forecast/graph/2-6167865/Canada/Ontario/Toronto
+LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-3061186/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Bansk%C3%A1%20Bystrica
 
 # language CC for meteogram translation
 #
@@ -65,7 +65,7 @@ LANG_CC=SK
 
 # time in seconds to show meteogram
 #
-SHOWFOR=30
+SHOWFOR=20
 
 # iptv player (mpv, by this title iPTV window is focused)
 #
@@ -193,7 +193,7 @@ msg="true"
 #
 $msg "= starting $0 = result $RESULT = WxH $WxH = html.title $TITLE = show $SHOWFOR = lang.cc $LANG_CC ="
 
-# split W x H
+# split W x H to W and H
 #
 W=${WxH%x*}
 H=${WxH#*x}
@@ -201,7 +201,7 @@ H=${WxH#*x}
 # get meteogram (calc w x h reduced by border size)
 #
 [[ $ACTION == *meteogram* ]] && $(dirname $0)/meteogram.sh -r "$RESULT" -title "$TITLE" \
-                                    -wxh "$((W-BORDER))x$((H-2*BORDER))" \
+                                    -wxh "$((W-BORDER))x$((H-BORDER))" \
                                     -loc "$LOC" -cc "$LANG_CC" -force "$ACTION"
 
 # title to identify svg viewer
