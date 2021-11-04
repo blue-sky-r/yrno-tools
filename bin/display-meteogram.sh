@@ -100,7 +100,7 @@ s sec    ... show meteogram for time sec (default $SHOWFOR)
 cc CC    ... translate to language CC (default $LANG_CC), empty is EN (no translation)
 i title  ... html title (default $TITLE), result is in html format if title is provided, otherwise in svg format
 v title  ... iptv player title (default $IPTV_TITLE_SUFFIX)
-o loc    ... location in the format Country/Province/City (default $LOC)
+o loc    ... location id in the format 2-12345 (default $LOC)
 r res    ... result file (default $RESULT)
 a action ... execute actions (default $ACTION)
              meteogram - call script meteogram.sh to retrieve svg/html
