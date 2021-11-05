@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2020.06.10
+VER=2021.11.03
 
 # packages / scripts required
 #
@@ -33,8 +33,8 @@ HTML=/tmp/meteo.html
 
 # location
 #
-LOC="Canada/Ontario/Toronto"
-LOC="Slovakia/Banská_Bystrica/Banská_Bystrica"
+LOC="2-6167865"     # https://www.yr.no/en/forecast/graph/2-6167865/Canada/Ontario/Toronto
+LOC="2-3061186"     # https://www.yr.no/en/forecast/daily-table/2-3061186/Slovakia/Banskobystrick%C3%BD%20kraj/Bansk%C3%A1%20Bystrica%20District/Bansk%C3%A1%20Bystrica
 
 # debug (output to stdout)
 #
@@ -62,10 +62,10 @@ Y=1024
 CSS_BG="background-color: black"
 
 # css margin to position svg meteogram on html page
-# unscaled svg dim: 828 x 272
-# cass margin: top right bottom left
-#CSS_MARGIN="0 0 675 440"    # scaling: 1.000, 1.250 for 1280x1024
-CSS_MARGIN="0 0 743 440"     # scaling: 1.000, 1.000 for 1280x1024
+# css margin: top right bottom left
+#CSS_MARGIN="0 0 675 440"    # 828x272 scaling: 1.000, 1.250 for 1280x1024
+#CSS_MARGIN="0 0 743 440"    # 828x272 scaling: 1.000, 1.000 for 1280x1024
+CSS_MARGIN="0 0 624 486"     # 782x391 scaling: 1.000, 1.000 for 1280x1024
 
 # optional border around meteogram for visual enhancement
 #
@@ -88,7 +88,7 @@ m margin ... css margin to position svg meteogram on html page (default $CSS_MAR
 b border ... optional border around meteogram (default $CSS_BORDER)
 x width  ... x-size (width  in pixels, default $X)
 y height ... y-size (height in pixels, default $Y)
-o loc    ... location in the format Country/Province/City (default $LOC)
+o loc    ... location id in the format 2-12345 (default $LOC)
 r res    ... result desktop wallpaper (png) file
 
 Required: $REQUIRES
@@ -105,11 +105,11 @@ Position of meteogram in the right-bottom corner on Trinity crystal_fire wallpap
 
 Default position of meteogram on black background for for Toronto, CA
 
- > $0 -x 1280 -y 1024 -bg black -loc 'Canada/Ontario/Toronto' -r /tmp/test.png
+ > $0 -x 1280 -y 1024 -bg black -loc '2-6167865' -r /tmp/test.png
 
 Command for Trinity / Desktop / Advanced settings:
 
- > $0 -x %x -y %y -loc 'Canada/Ontario/Toronto' -bg /opt/trinity/share/wallpapers/crystal_fire.png -r %f
+ > $0 -x %x -y %y -loc '2-6167865' -bg /opt/trinity/share/wallpapers/crystal_fire.png -r %f
 "
 
 # construct style
@@ -259,7 +259,7 @@ $msg "using html.css: $css"
 
 # get meteogram, just try to copy bg in case of any error (exitcode has to be 0 otherwise result is discarded)
 #
-$(dirname "$0")/meteogram.sh -wxh $wxh $cc -i "$TITLE" -css "$css" -loc "$LOC" -r "$HTML" \
+$(dirname "$0")/meteogram.sh -d -wxh $wxh $cc -i "$TITLE" -css "$css" -loc "$LOC" -r "$HTML" \
 || { $msg "error getting meteogram, try to use background $CSS_BG"; [ -s "$CSS_BG" ] && cp "$CSS_BG" "$RESULT"; exit 0; }
 
 # log
