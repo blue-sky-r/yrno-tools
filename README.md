@@ -4,7 +4,7 @@ The Norway Weather forecast website [https://www.yr.no](https://www.yr.no) provi
 representation of hour-by-hour weather conditions called meteogram. It combines temperature plot, sky conditions,
 amount of rain and wind strength and direction in one picture:
 
-![www.yr.no hour-by-hour meteogram for Toronto ON CA](screenshot/yr.no-hour-by-hour.png)
+![www.yr.no hour-by-hour meteogram for Toronto ON CA](screenshot/yr.no-hour-by-hour-toronto.png)
 
 Here are some linux tools to work with meteograms:
 
@@ -24,6 +24,20 @@ To modify defaults just edit section denoted:
     # /DEFAULTS #
     #------------
 
+### How to find Your location id
+
+The new YR web face-lift redesign dropped the descriptive location specification and moved to very cryptic location ids.
+That means You have to find this cryptic numeric location id. Fortunately right now it looks like one time process. Just go 
+the the [https://www.yr.no](https://www.yr.no) page and start searching for your location by typing in the search input.
+Then select Your closest match from list of suggestions bellow the input box. Once the selected location become active
+the URL with cryptic location id is shown in address bar, for example for Toronto, Ontario, Canada:
+
+![www.yr.no hour-by-hour meteogram for Toronto ON CA](screenshot/yr.no-serach-location.png)    
+
+    https://www.yr.no/en/forecast/graph/2-6167865/Canada/Ontario/Toronto
+    
+    In this case location "Canada.Ontario.Toronto" has cryptic location id = 2-6167865
+
 ### meteogram.sh
 
 BASH script to retrieve hour-by-hour web page from [https://www.yr.no](https://www.yr.no) for specific location (wget).
@@ -33,7 +47,7 @@ is also available (sed script). The result is either svg or html format.
 
     $ bin/meteogram.sh -h
 
-    = weather meteogram = extract svg graphic meteogram from yr.no = (c) 2020.06.11 by Robert = https://github.com/blue-sky-r/yrno-tools =
+    = weather meteogram = extract svg graphic meteogram from yr.no = (c) 2021.11.02 by Robert = https://github.com/blue-sky-r/yrno-tools =
 
     usage: ./meteogram.sh [-h][-d][-l tag][-t sec][-a agent][-c cache][-e exp][-cc CC][-i title][-s css][-u url][-o loc][-r res][-f force][-wxh WxH]
 
@@ -48,7 +62,7 @@ is also available (sed script). The result is either svg or html format.
     i title  ... html title (default empty), result is html format if title is provided, svg format otherwise
     s css    ... css style for html output (default body { background-color: black; cursor: none; } body div { display: table, margin: auto; })
     u url    ... url to get meteogram svg graphic (default https://www.yr.no/place/Canada/Ontario/Toronto/hour_by_hour.html)
-    o loc    ... location instead of full url in the format Country/Province/City (default Canada/Ontario/Toronto)
+    o loc    ... location id in the format 2-12345 (default 2-6167865)
     r res    ... result file (default /tmp/meteogram.html)
     f force  ... force update action (default empty)
                  wget - force cache refresh even within expiry period
@@ -67,7 +81,7 @@ Tje IPTV player in the background is not paused so audio is still available whil
 
     $ bin/display-meteogram.sh -h
 
-    = display meteogram = retrieve and display meteogram in viewer for defined time = (c) 2020.06.03 by Robert = https://github.com/blue-sky-r/mpv-wifi-rc =
+    = display meteogram = retrieve and display meteogram in viewer for defined time = (c) 2021.11.03 by Robert = https://github.com/blue-sky-r/mpv-wifi-rc =
 
     usage: ./display-meteogram.sh [-h][-d][-l tag][-s sec][-cc CC][-i title][-v title][-o loc][-r res][-a action][-b border][-wxh WxH]
 
@@ -78,7 +92,7 @@ Tje IPTV player in the background is not paused so audio is still available whil
     cc CC    ... translate to language CC (default SK), empty is EN (no translation)
     i title  ... html title (default meteogram), result is in html format if title is provided, otherwise in svg format
     v title  ... iptv player title (default mpv)
-    o loc    ... location in the format Country/Province/City (default Slovakia/Bansk%C3%A1_Bystrica/Bansk%C3%A1_Bystrica)
+    o loc    ... location id in the format 2-12345 (default 2-3061186)
     r res    ... result file (default /tmp/meteogram.html)
     a action ... execute actions (default meteogram viewer refresh sleep iptv)
                  meteogram - call script meteogram.sh to retrieve svg/html
@@ -104,7 +118,7 @@ for the next 48 hours. Position and size of the meteogram are configurable.
 
     $ bin/wallpaper.sh -h
 
-    = generate desktop wallpaper png image with actual weather meteogram from yr.no = (c) 2020.06.10 by Robert = https://github.com/blue-sky-r/yrno-tools =
+    = generate desktop wallpaper png image with actual weather meteogram from yr.no = (c) 2021.11.03 by Robert = https://github.com/blue-sky-r/yrno-tools =
 
     usage: ./wallpaper.sh [-h][-d][-l tag][-cc CC][-bg image][-m margin][-b border] -x width -y height -o loc -r res
 
@@ -117,7 +131,7 @@ for the next 48 hours. Position and size of the meteogram are configurable.
     b border ... optional border around meteogram (default 3px solid cyan)
     x width  ... x-size (width  in pixels, default 1280)
     y height ... y-size (height in pixels, default 1024)
-    o loc    ... location in the format Country/Province/City (default Slovakia/Banská_Bystrica/Banská_Bystrica)
+    o loc    ... location id in the format 2-12345 (default 2-3061186)
     r res    ... result desktop wallpaper (png) file
 
     Required: pkg: cutycapt; script: meteogram.sh [meteogram-CC.sed]
@@ -134,11 +148,11 @@ for the next 48 hours. Position and size of the meteogram are configurable.
 
     Default position of meteogram on black background for for Toronto, CA
 
-     > ./wallpaper.sh -x 1280 -y 1024 -bg black -loc 'Canada/Ontario/Toronto' -r /tmp/test.png
+     > ./wallpaper.sh -x 1280 -y 1024 -bg black -loc '2-6167865' -r /tmp/test.png
 
     Command for Trinity / Desktop / Advanced settings:
 
-     > ./wallpaper.sh -x %x -y %y -loc 'Canada/Ontario/Toronto' -bg /opt/trinity/share/wallpapers/crystal_fire.png -r %f
+     > ./wallpaper.sh -x %x -y %y -loc '2-6167865' -bg /opt/trinity/share/wallpapers/crystal_fire.png -r %f
 
 ### TDE custom wallpaper setup
 
