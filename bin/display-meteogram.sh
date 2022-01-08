@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2021.11.03
+VER=2022.01.03
 
 # packages required
 #
@@ -29,7 +29,8 @@ COPY="= display meteogram = retrieve and display meteogram in viewer for defined
 
 # browser width x height
 #
-WxH=1920x1080
+#WxH=1920x1080		# technika TV
+WxH=1280x720		  # Veriton TV
 
 # border (svg will be smaller by border)
 #
@@ -204,9 +205,10 @@ H=${WxH#*x}
                                     -wxh "$((W-BORDER))x$((H-BORDER))" \
                                     -loc "$LOC" -cc "$LANG_CC" -force "$ACTION"
 
-# title to identify svg viewer
+# title to identify svg viewer via grep
+# firefox has changed separator '-' -> '—'
 #
-VIEWER_TITLE="$TITLE - $VIEWER_TITLE_SUFFIX"
+VIEWER_TITLE="$TITLE . $VIEWER_TITLE_SUFFIX"
 
 # title to identify iPTV player
 #
@@ -230,7 +232,7 @@ then
         for cnt in {1..10}
         {
             sleep 5
-            wmctrl -l | grep -q "$VIEWER_TITLE" && break && $msg "$VIEWER window found - title: $VIEWER_TITLE"
+            wmctrl -l | grep -q "$VIEWER_TITLE" && $msg "$VIEWER window found - title: $VIEWER_TITLE" && break
             $msg "$cnt ... waiting for $VIEWER window - title: $VIEWER_TITLE"
         }
     fi
