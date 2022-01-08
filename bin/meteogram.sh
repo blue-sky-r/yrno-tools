@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2021.11.02
+VER=2022.01.05
 
 # packages required
 #
@@ -68,7 +68,11 @@ STYLE="body { background-color: white; cursor: none; }"
 # refresh cache (minimum 60 mins - please read and respect Data-access-and-terms-of-service)
 # https://hjelp.yr.no/hc/en-us/articles/360001946134-Data-access-and-terms-of-service
 #
-EXPIRY='4 hour + 15 mins'
+EXPIRY='1 hour + 15 mins'
+
+# updates
+# https://hjelp.yr.no/hc/en-us/articles/360014549074-Updating-frequency-
+# UPDATES_UTC="01:00 09:30 13:00 20:30"
 
 # scale to width x height (empty for no scaling)
 #
@@ -109,7 +113,7 @@ cc CC    ... translate to language CC (default ${LANG_CC:-EN}), empty is EN
 i title  ... html title (default ${TITLE:-empty}), result is html format if title is provided, svg format otherwise
 s css    ... css style for html output (default $STYLE)
 u url    ... url to get meteogram svg graphic (default $URL)
-o loc    ... location id instead of full url in the format 2-12345 (default $LOC)
+o loc    ... location id in the format 2-12345 (default $LOC)
 r res    ... result file (default $RESULT)
 f force  ... force update action (default ${FORCE:-empty})
              wget - force cache refresh even within expiry period
@@ -235,12 +239,22 @@ then
 
     # get or exit with wget exitcode
     #
-    wget -q -U "$UA" --timeout=$TIMEOUT -O "$CACHE" "$URL" && cache_updated=1 \
-    || { exitcode=$?; $msg "wget error code: $exitcode"; exit $exitcode; }
+    #wget -q -U "$UA" --timeout=$TIMEOUT -O "$CACHE" "$URL" && cache_updated=1 \
+    #|| { exitcode=$?; $msg "wget error code: $exitcode"; exit $exitcode; }
 
+    # get with repeated retries and exit with wget exitcode if fails
+    #    
+    sleepretry=5    
+    for try in {1..10}
+    {
+	    wget -q -U "$UA" --timeout=$TIMEOUT -O "$CACHE" "$URL" && cache_updated=1 && break
+    	exitcode=$? && $msg "wget exitcode: $exitcode - retry: $try - sleep between retries: $sleepretry" && sleep $sleepretry
+    }
+    [ ! $cache_updated ] && $msg "wget failed after 10 retries with exitcode: $exitcode" && exit $exitcode
+    
     # log
     #
-    $msg "updated cache: $( ls -l $CACHE )"
+    $msg "cache has been updated: $( ls -l $CACHE )"
 else
     # log
     #
@@ -279,9 +293,9 @@ then
     if [ -n "$WxH" ]
     then
         # source dimensions
-        # w=$( awk '/width=/  {gsub(/[^0-9]/,"",$0); print $0; exit}' "$CACHE" )
-        # h=$( awk '/height=/ {gsub(/[^0-9]/,"",$0); print $0; exit}' "$CACHE" )
-        w=782; h=391
+        # w=782; h=391
+        w=$( awk '/width=/  {gsub(/[^0-9]/,"",$0); print $0; exit}' "$CACHE" )
+        h=$( awk '/height=/ {gsub(/[^0-9]/,"",$0); print $0; exit}' "$CACHE" )
 
         # target dimensions
         width=${WxH%x*}
