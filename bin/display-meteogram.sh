@@ -6,7 +6,7 @@
 
 # version
 #
-VER=2022.01.03
+VER=2022.02.05
 
 # packages required
 #
@@ -208,7 +208,7 @@ H=${WxH#*x}
 # title to identify svg viewer via grep
 # firefox has changed separator '-' -> '—'
 #
-VIEWER_TITLE="$TITLE . $VIEWER_TITLE_SUFFIX"
+VIEWER_TITLE="$TITLE — $VIEWER_TITLE_SUFFIX"
 
 # title to identify iPTV player
 #
